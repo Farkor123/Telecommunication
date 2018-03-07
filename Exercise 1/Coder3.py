@@ -12,12 +12,10 @@ def stringify():
 	x = 0
 	y = 0
 	while x < len(read):
-		print(x, "\n")
-		print((len(read)-x), "\n")
 		if (len(read)-x) < 8:
 			strs[y] = (8-(len(read)-x))*"0"+read[x:len(read)]
 			file = open("./offset.txt", "w")
-			file.write(str(9-(len(read)-x)))
+			file.write(str(8-(len(read)-x)))
 			file.close
 		else:
 			strs[y] = read[x:(x + 8)]
