@@ -28,9 +28,16 @@ def stringify():
 
 
 def findErrorPosition(G, err1, err2):
-    for i in range(0, 17):
-        for j in range(i+1, 17):
-            arr = np.matrix([[(H[0, i] + H[0, j])%2],
+	for i in range(0, 17):
+		for j in range(0,9):
+			if H[j,i] != G[j,0]:
+				break
+			elif j == 8:
+				err[1] = i
+				return
+	for i in range(0, 17):
+		for j in range(i+1, 17):
+			arr = np.matrix([[(H[0, i] + H[0, j])%2],
 			                 [(H[1, i] + H[1, j])%2],
 							 [(H[2, i] + H[2, j])%2],
 							 [(H[3, i] + H[3, j])%2],
@@ -39,14 +46,14 @@ def findErrorPosition(G, err1, err2):
 							 [(H[6, i] + H[6, j])%2],
 							 [(H[7, i] + H[7, j])%2],
 							 [(H[8, i] + H[8, j])%2]])
-            for k in range(0, 8):
-                if(arr[k, 0] != G[k, 0]):
-                    break;
-                if k == 7:
-                    err1[0] = i
-                    err2[0] = j
-                    return
-    return
+			for k in range(0, 9):
+				if(arr[k, 0] != G[k, 0]):
+					break
+				if k == 8:
+					err1[0] = i
+					err2[0] = j
+					return
+	return
 
 def decode(string):
     T = np.matrix([[int(string[0])],
@@ -72,6 +79,7 @@ def decode(string):
     findErrorPosition(G, err11, err22)
     err1 = err11[0]
     err2 = err22[0]
+    print(err1, err2)
     if err1 >= 0 and err1 <= 17:
         if string[err1]==0:
             string = string[0:err1]+"1"+string[err1+1:18]
@@ -89,7 +97,7 @@ for i in range(len(string)):
 	string[i] = decode(string[i])
 bigstring = ""
 for j in range(len(string)):
-	bigstring += string[i]
+	bigstring += string[j]
 file = open("./file3.txt", "w")
 file.write(bigstring)
 file.close()
