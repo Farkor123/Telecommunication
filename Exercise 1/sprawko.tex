@@ -1,8 +1,8 @@
 \documentclass[a4paper, portrait,11pt]{article}
 \usepackage[verbose,a4paper,tmargin=3cm,bmargin=3cm,lmargin=2.5cm,rmargin=2.5cm]{geometry}
 \usepackage[utf8]{inputenc}
-\usepackage{polski}
 \usepackage{amsmath}
+\usepackage{polski}
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{lastpage}
@@ -31,7 +31,7 @@
 \large{\underline{210323~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~} }\\
 $^{numer\ indeksu}$\\
 \large {\underline{Huebrt Sosnowski~~~~~~~~~~~~~~~~~~~~~~~~~~~~} }\\
-$^{imię\ i\ nazwisko}$ \\\\ \hline
+$^{imie\ i\ nazwisko}$ \\\\ \hline
 \end{tabular} 
 &
 \begin{tabular}{|r|}
@@ -39,7 +39,7 @@ $^{imię\ i\ nazwisko}$ \\\\ \hline
 \large{\underline{210310~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~} }\\
 $^{numer\ indeksu}$\\
 \large {\underline{Adam Sadowski~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~} }\\
-$^{imię\ i\ nazwisko}$ \\\\ \hline
+$^{imie\ i\ nazwisko}$ \\\\ \hline
 \end{tabular} 
 
 \end{tabular}
@@ -102,6 +102,367 @@ $$H_2 = \left[\begin{array}{cccccccccccccccccc}
 \end{array}\right]$$
 \\
 Suma kontrolna wyliczana jest analogicznie jak w poprzednim przypadku.
+\newpage
+\subsection*{Zadanie 1.1.}
+\begin{lstlisting}
+import numpy as np
+import sys
 
+H = np.matrix([[0,1,1,1,1,0,0,1,1,0,0,0],
+               [1,0,1,1,0,0,1,1,0,1,0,0],
+               [0,1,1,0,1,1,1,1,0,0,1,0],
+               [1,0,0,1,1,1,1,1,0,0,0,1]])
+
+def code():
+    a = str(sys.argv[1])
+    f = open("./file.txt","w")
+    f.write(a)
+    for i in range(0, 4):
+	    x = 0
+	    for j in range(0,8):
+		    x = x + int(a[j]) * H[i,j]
+	    x = x%2
+	    f.write(str(x))
+    f.close()
+
+def createError():
+    f = open("./file.txt","r")
+    a = f.read()
+    f.close()
+    print(a)
+    inp = input("Ktory bit zmienic?\n")
+    b = a[0:int(inp)]+str((int(a[int(inp)])+1)%2)+a[int(inp)+1:len(a)]
+    print(b)
+    f = open("./file.txt","w")
+    f.write(b)
+    f.close()
+
+def findErrorPosition(x, y):
+    for i in range(0, 12):
+        for j in range(0,4):
+            if x[j,i] != y[j,0]:
+                break;
+            else:
+                if j == 3:
+                    return i
+    return -1
+
+def decode():
+    f = open("./file.txt", "r")
+    a = f.read()
+    f.close()
+    T = np.matrix([[int(a[0])],
+                   [int(a[1])],
+                   [int(a[2])],
+                   [int(a[3])],
+                   [int(a[4])],
+                   [int(a[5])],
+                   [int(a[6])],
+                   [int(a[7])],
+                   [int(a[8])],
+                   [int(a[9])],
+                   [int(a[10])],
+                   [int(a[11])]])
+    G = (H*T)%2
+    i = findErrorPosition(H, G)
+    if i >= 0 and i <= 11:
+        if T[i]==0:
+            T[i] = 1
+            a = a[0:i]+"1"+a[i+1:12]
+        else:
+            T[i] = 0
+            a = a[0:i]+"0"+a[i+1:12]
+        return a
+
+code()
+createError()
+print("Poprawna wiadomosc to:\n",decode())
+\end{lstlisting}
+\newpage
+\subsection*{Zadanie 1.2.}
+\begin{lstlisting}
+import numpy as np
+from types import *
+import sys
+
+H = np.matrix([
+	      [0, 0, 1, 1, 0, 0, 0, 1,	1, 0, 0, 0, 0, 0, 0, 0, 0],
+	      [1, 1, 1, 1, 0, 1, 0, 0,	0, 1, 0, 0, 0, 0, 0, 0, 0],
+	      [1, 1, 0, 0, 1, 0, 0, 1,	0, 0, 1, 0, 0, 0, 0, 0, 0],
+	      [0, 0, 1, 0, 1, 0, 1, 0,	0, 0, 0, 1, 0, 0, 0, 0, 0],
+	      [1, 0, 1, 1, 1, 1, 0, 1,	0, 0, 0, 0, 1, 0, 0, 0, 0],
+	      [0, 1, 0, 1, 1, 1, 1, 1,	0, 0, 0, 0, 0, 1, 0, 0, 0],
+	      [1, 1, 1, 1, 1, 1, 1, 0,	0, 0, 0, 0, 0, 0, 1, 0, 0],
+	      [0, 0, 1, 0, 1, 1, 0, 1,	0, 0, 0, 0, 0, 0, 0, 1, 0],
+	      [0, 1, 0, 1, 1, 0, 1, 0,	0, 0, 0, 0, 0, 0, 0, 0, 1]
+	      ])
+
+def code():
+    f = open("./file2.txt","w")
+    a = str(sys.argv[1])
+    f.write(a)
+    for i in range(0, 9):
+	    x = 0
+	    for j in range(0,8):
+		    x = x + int(a[j]) * H[i,j]
+	    x = x%2
+	    f.write(str(x))
+    f.close()
+    d = open("./file2.txt","r+")
+    print(d.read())
+    d.close()
+
+def createError():
+    f = open("./file2.txt","r")
+    inp = input("Ktory bit zmienic?\n")
+    a = f.read()
+    f.close()
+    b = a[0:int(inp)]+str((int(a[int(inp)])+1)%2)+a[int(inp)+1:len(a)]
+    print(b)
+    f = open("./file2.txt","w")
+    f.write(b)
+    f.close()
+    f = open("./file2.txt","r")
+    inp = input("Ktory bit zmienic?\n")
+    a = f.read()
+    f.close()
+    b = a[0:int(inp)]+str((int(a[int(inp)])+1)%2)+a[int(inp)+1:len(a)]
+    print(b)
+    f = open("./file2.txt","w")
+    f.write(b)
+    f.close()
+
+def findErrorPosition(y, err1, err2):
+    for i in range(0, 17):
+        for j in range(i+1, 17):
+            arr = np.matrix([[(H[0, i] + H[0, j])%2],
+			     [(H[1, i] + H[1, j])%2],
+			     [(H[2, i] + H[2, j])%2],
+			     [(H[3, i] + H[3, j])%2],
+			     [(H[4, i] + H[4, j])%2],
+			     [(H[5, i] + H[5, j])%2],
+			     [(H[6, i] + H[6, j])%2],
+			     [(H[7, i] + H[7, j])%2],
+			     [(H[8, i] + H[8, j])%2]])
+            for k in range(0, 8):
+                if(arr[k, 0] != y[k, 0]):
+                    break;
+                if k == 7:
+                    err1[0] = i
+                    err2[0] = j
+                    return
+    return
+
+def decode():
+    f = open("./file2.txt","r+")
+    a = f.read()
+    f.close()
+    T = np.matrix([[int(a[0])],
+	           [int(a[1])],
+	           [int(a[2])],
+	     	   [int(a[3])],
+	    	   [int(a[4])],
+	           [int(a[5])],
+	           [int(a[6])],
+	           [int(a[7])],
+	           [int(a[8])],
+	           [int(a[9])],
+	           [int(a[10])],
+	           [int(a[11])],
+	           [int(a[12])],
+	           [int(a[13])],
+	           [int(a[14])],
+                   [int(a[15])],
+	           [int(a[16])]])
+    G = (H*T)%2
+    err11 = np.array([-1])
+    err22 = np.array([-1])
+    findErrorPosition(G, err11, err22)
+    err1 = err11[0]
+    err2 = err22[0]
+    if err1 >= 0 and err1 <= 17:
+        if T[err1]==0:
+            T[err1] = 1
+            a = a[0:err1]+"1"+a[err1+1:18]
+        else:
+            T[err1] = 0
+            a = a[0:err1]+"0"+a[err1+1:18]
+    if err2 >= 0 and err2 <= 17:
+        if T[err2]==0:
+            T[err2] = 1
+            a = a[0:err2]+"1"+a[err2+1:18]
+        else:
+            T[err1] = 0
+            a = a[0:err2]+"0"+a[err2+1:18]
+        print("Poprawny kod to\n",a)
+
+code()
+createError()
+decode()
+\end{lstlisting}
+\newpage
+\subsection*{Zadanie 1.3. - koder}
+\begin{lstlisting}
+import numpy as np
+import sys
+
+def stringify():
+	file = open("./file3.txt", "r")
+	read = file.read()
+	file.close()
+	size = (len(read)//8)
+	if len(read)%8 != 0:
+		size += 1
+	strs = ["" for i in range(size)]
+	x = 0
+	y = 0
+	while x < len(read):
+		if (len(read)-x) < 8:
+			strs[y] = (8-(len(read)-x))*"0"+read[x:len(read)]
+			file = open("./offset.txt", "w")
+			file.write(str(8-(len(read)-x)))
+			file.close
+		else:
+			strs[y] = read[x:(x + 8)]
+		y += 1
+		x += 8
+	return strs
+
+def code(string):
+H = np.matrix([
+	      [0, 0, 1, 1, 0, 0, 0, 1,	1, 0, 0, 0, 0, 0, 0, 0, 0],
+	      [1, 1, 1, 1, 0, 1, 0, 0,	0, 1, 0, 0, 0, 0, 0, 0, 0],
+	      [1, 1, 0, 0, 1, 0, 0, 1,	0, 0, 1, 0, 0, 0, 0, 0, 0],
+	      [0, 0, 1, 0, 1, 0, 1, 0,	0, 0, 0, 1, 0, 0, 0, 0, 0],
+	      [1, 0, 1, 1, 1, 1, 0, 1,	0, 0, 0, 0, 1, 0, 0, 0, 0],
+	      [0, 1, 0, 1, 1, 1, 1, 1,	0, 0, 0, 0, 0, 1, 0, 0, 0],
+	      [1, 1, 1, 1, 1, 1, 1, 0,	0, 0, 0, 0, 0, 0, 1, 0, 0],
+	      [0, 0, 1, 0, 1, 1, 0, 1,	0, 0, 0, 0, 0, 0, 0, 1, 0],
+	      [0, 1, 0, 1, 1, 0, 1, 0,	0, 0, 0, 0, 0, 0, 0, 0, 1]
+	      ])
+	y = string
+	for i in range(0, 9):
+		x = 0
+		for j in range(0, 8):
+			x += int(string[j])*H[i, j]
+		x = x % 2
+		y += str(x)
+	return y
+
+strings = stringify()
+bigstring = ""
+for i in range(len(strings)):
+	bigstring += code(strings[i])
+file = open("./file3.txt", "w")
+file.write(bigstring)
+file.close()
+\end{lstlisting}
+\newpage
+\subsection*{Zadanie 1.3. - dekoder}
+\begin{lstlisting}
+import numpy as np
+
+H = np.matrix([
+	      [0, 0, 1, 1, 0, 0, 0, 1,	1, 0, 0, 0, 0, 0, 0, 0, 0],
+	      [1, 1, 1, 1, 0, 1, 0, 0,	0, 1, 0, 0, 0, 0, 0, 0, 0],
+	      [1, 1, 0, 0, 1, 0, 0, 1,	0, 0, 1, 0, 0, 0, 0, 0, 0],
+	      [0, 0, 1, 0, 1, 0, 1, 0,	0, 0, 0, 1, 0, 0, 0, 0, 0],
+	      [1, 0, 1, 1, 1, 1, 0, 1,	0, 0, 0, 0, 1, 0, 0, 0, 0],
+	      [0, 1, 0, 1, 1, 1, 1, 1,	0, 0, 0, 0, 0, 1, 0, 0, 0],
+	      [1, 1, 1, 1, 1, 1, 1, 0,	0, 0, 0, 0, 0, 0, 1, 0, 0],
+	      [0, 0, 1, 0, 1, 1, 0, 1,	0, 0, 0, 0, 0, 0, 0, 1, 0],
+	      [0, 1, 0, 1, 1, 0, 1, 0,	0, 0, 0, 0, 0, 0, 0, 0, 1]
+	      ])
+
+def stringify():
+	file = open("./file3.txt", "r")
+	read = file.read()
+	file.close()
+	size = (len(read)//17)
+	strs = ["" for i in range(size)]
+	x = 0
+	y = 0
+	while x < len(read):
+		strs[y] = read[x:(x + 17)]
+		y += 1
+		x += 17
+	return strs
+
+
+def findErrorPosition(G, err1, err2):
+	for i in range(0, 17):
+		for j in range(0,9):
+			if H[j,i] != G[j,0]:
+				break
+			elif j == 8:
+				err[1] = i
+				return
+	for i in range(0, 17):
+		for j in range(i+1, 17):
+            arr = np.matrix([[(H[0, i] + H[0, j])%2],
+			     [(H[1, i] + H[1, j])%2],
+			     [(H[2, i] + H[2, j])%2],
+			     [(H[3, i] + H[3, j])%2],
+			     [(H[4, i] + H[4, j])%2],
+			     [(H[5, i] + H[5, j])%2],
+			     [(H[6, i] + H[6, j])%2],
+			     [(H[7, i] + H[7, j])%2],
+			     [(H[8, i] + H[8, j])%2]])
+			for k in range(0, 9):
+				if(arr[k, 0] != G[k, 0]):
+					break
+				if k == 8:
+					err1[0] = i
+					err2[0] = j
+					return
+	return
+
+def decode(string):
+    T = np.matrix([[int(a[0])],
+	           [int(a[1])],
+	           [int(a[2])],
+	     	   [int(a[3])],
+	    	   [int(a[4])],
+	           [int(a[5])],
+	           [int(a[6])],
+	           [int(a[7])],
+	           [int(a[8])],
+	           [int(a[9])],
+	           [int(a[10])],
+	           [int(a[11])],
+	           [int(a[12])],
+	           [int(a[13])],
+	           [int(a[14])],
+                   [int(a[15])],
+	           [int(a[16])]])
+    G = (H*T)%2
+    err11 = np.array([-1])
+    err22 = np.array([-1])
+    findErrorPosition(G, err11, err22)
+    err1 = err11[0]
+    err2 = err22[0]
+    print(err1, err2)
+    if err1 >= 0 and err1 <= 17:
+        if string[err1]==0:
+            string = string[0:err1]+"1"+string[err1+1:18]
+        else:
+            string = string[0:err1]+"0"+string[err1+1:18]
+    if err2 >= 0 and err2 <= 17:
+        if string[err2]==0:
+            string = string[0:err2]+"1"+string[err2+1:18]
+        else:
+            string = string[0:err2]+"0"+string[err2+1:18]
+    return string
+
+string = stringify()
+for i in range(len(string)):
+	string[i] = decode(string[i])
+bigstring = ""
+for j in range(len(string)):
+	bigstring += string[j]
+file = open("./file3.txt", "w")
+file.write(bigstring)
+file.close()
+\end{lstlisting}
 \end{document}
 \grid
