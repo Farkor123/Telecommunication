@@ -79,6 +79,29 @@ $$H_1 = \left[\begin{array}{ccccccccccccc}
 \\
 Do wyliczenia sumy kontrolnej informacji użyliśmy wzoru:\\
 
-$c_i = \displaystyle\sum_{j=0}^{7} a_j*H_{i,j}$, 
+$c_i = (\displaystyle\sum_{j=0}^{7} a_j*H_{i,j}) \% 2$, 
 gdzie i-indeks bitu sumy kontrolnej {0-3}, a-informacja, H-macierz.\\
 \\
+
+\subsection*{Korekcja dwóch błędów}
+Macierz do korekcji dwóch błędów, pomimo warunków jak dla pierwszej macierzy, powinna dodatkowo 
+spełniać warunek: żadna z kolumn nie może być sumą dwóch innych kolumn.\\
+Macierz spełniająca ten warunek została przedstawiona poniżej, testy w programie 
+potwierdziły jej poprawność:
+
+$$H_2 = \left[\begin{array}{cccccccccccccccccc}
+0 & 0 & 1 & 1 & 0 & 0 & 0 & 1 & \, & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+1 & 1 & 1 & 1 & 0 & 1 & 0 & 0 & \, & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+1 & 1 & 0 & 0 & 1 & 0 & 0 & 1 & \, & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 1 & 0 & 1 & 0 & 1 & 0 & \, & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 \\
+1 & 0 & 1 & 1 & 1 & 1 & 0 & 1 & \, & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 \\
+0 & 1 & 0 & 1 & 1 & 1 & 1 & 1 & \, & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 \\
+1 & 1 & 1 & 1 & 1 & 1 & 1 & 0 & \, & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 \\
+0 & 0 & 1 & 0 & 1 & 1 & 0 & 1 & \, & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 \\
+0 & 1 & 0 & 1 & 1 & 0 & 1 & 0 & \, & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1
+\end{array}\right]$$
+\\
+Suma kontrolna wyliczana jest analogicznie jak w poprzednim przypadku.
+
+\end{document}
+\grid
